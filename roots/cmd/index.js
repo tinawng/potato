@@ -6,7 +6,7 @@ export default function (app) {
         var cmd = spawn("/opt/vc/bin/vcgencmd", ["measure_temp"]);
         cmd.stdout.on("data", function (buf) {
             var obj = parseFloat(regex.exec(buf.toString("utf8"))[1]);
-            res.json(obj);
+            res.send(obj);
         });
     });
 
@@ -14,8 +14,8 @@ export default function (app) {
         let params = req.params.cmd.split(' ')
         let cmd = spawn(params[0], params.slice(1))
 
-        cmd.stdout.on("data", function (buf) {
-            res.json(buf.toString("utf8"));
+        cmd.stdout.on("data", function (buf) {  
+            res.send(buf.toString("utf8"));
         });
     });
 
@@ -24,7 +24,7 @@ export default function (app) {
         let cmd = spawn(params[0], params.slice(1))
 
         cmd.stdout.on("data", function (buf) {
-            res.json(buf.toString("utf8"));
+            res.send(buf.toString("utf8"));
         });
     })
 };
