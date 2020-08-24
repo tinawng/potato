@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
 import fastify from 'fastify';
 import mongoose from 'mongoose'
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
 const app = fastify()
-app.listen(3000, '0.0.0.0', (err) => {
+app.listen(8082, '0.0.0.0', (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
@@ -13,24 +14,47 @@ app.listen(3000, '0.0.0.0', (err) => {
   console.log("serv on 3k");
 })
 
-if (process.env.MONGODB_HOST) {
-  mongoose.connect('mongodb://' + process.env.MONGODB_HOST + '/garden', { useNewUrlParser: true, useUnifiedTopology: true });
-  const db = mongoose.connection;
-  db.on('error', console.error.bind(console, 'connection error:'));
-  db.once('open', function () {
-    // we're connected!
-    console.log("mongonected!")
-  });
-  mongoose.set('useCreateIndex', true);
-}
+// app.addHook('preValidation', (req, res, done) => {
+//   console.log('on every request');
+//   done()
+// })
 
 
-app.get('/', function (req, res) {
-  res.send("Hi there 👋");
+
+// Decorate request with a 'user' property
+app.decorateRequest('is_auth', '')
+
+// Update our property
+app.addHook('preHandler', (req, rep, done) => {
+  req.is_auth = false;
+
+  if (req.headers.authorization)
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      jwt.verify(token, process.env.SECRET);
+      req.is_auth = true;
+    } catch (error) {
+      rep.code(401).send({ message: "Invalid Token. 💔 Please, signin again! " });
+    }
+
+  done()
+})
+// And finally access it
+app.get('/', (req, reply) => {
+  if (req.is_auth)
+    reply.send("You're in 🔓")
+  else
+    reply.send("You're out 🔒")
 })
 
-import root_cmd from './roots/cmd/index.js'
-app.register(root_cmd, { prefix: "/cmd" })
-import root_mongo from './roots/mongo/index.js'
-app.register(root_mongo, { prefix: "/mongo" })
+// app.get('/', function (req, res) {
+//   res.send("Hi there 👋");
+// })
+
+import root_cmd from './roots/cmd/index.js';
+app.register(root_cmd, { prefix: "/cmd" });
+import root_mongo from './roots/mongo/index.js';
+app.register(root_mongo, { prefix: "/mongo" });
+import root_records from './roots/records/index.js';
+app.register(root_records, { prefix: "/records" });
 
