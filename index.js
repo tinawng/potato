@@ -25,16 +25,17 @@ app.listen(8082, '0.0.0.0', (err) => {
 app.decorateRequest('is_auth', '')
 
 // Update our property
-app.addHook('preHandler', (req, rep, done) => {
+app.addHook('preHandler', (req, res, done) => {
   req.is_auth = false;
 
   if (req.headers.authorization)
     try {
       const token = req.headers.authorization.split(" ")[1];
-      jwt.verify(token, process.env.SECRET);
+      var decoded = jwt.verify(token, process.env.SECRET);
       req.is_auth = true;
+      req.user_id = decoded.user_id;
     } catch (error) {
-      rep.code(401).send({ message: "Invalid Token. 💔 Please, signin again! " });
+      res.code(401).send({ message: "Invalid Token. 💔 Please, signin again! " });
     }
 
   done()
@@ -42,7 +43,7 @@ app.addHook('preHandler', (req, rep, done) => {
 // And finally access it
 app.get('/', (req, reply) => {
   if (req.is_auth)
-    reply.send("You're in 🔓")
+    reply.send("You're in 🔓 \nHi there 👋 " + req.user_id)
   else
     reply.send("You're out 🔒")
 })
@@ -56,5 +57,6 @@ app.register(root_cmd, { prefix: "/cmd" });
 import root_mongo from './roots/mongo/index.js';
 app.register(root_mongo, { prefix: "/mongo" });
 import root_records from './roots/records/index.js';
+import Review from './roots/records/models/Review.js';
 app.register(root_records, { prefix: "/records" });
 
