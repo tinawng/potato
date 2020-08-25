@@ -10,7 +10,7 @@ let album_schema = new Schema({
   title: { type: String, unique: true, required: true },
   tracks: { type: Array, required: true },
   description: { type: String, default: "" },
-  author: { type: String, default: "Various artists" },
+  user_id: { type: Schema.Types.ObjectId, required: true },
   date: { type: Date, default: Date.now },
   icon: { type: String, default: "music-circle-outline" },
   is_hidden: { type: Boolean, default: false },
