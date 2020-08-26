@@ -39,15 +39,24 @@ export default async function (app, opts) {
       }
     })
   });
+  app.get("/albums/user/:user_id", (req, res) => {
+    if (req.is_auth && req.user_id === req.params.user_id)
+      album_model.find({ user_id: req.params.user_id }, (error, user) => {
+        if (error) {
+          res.code(500).send({
+            error: error
+          });
+        } else {
+          res.code(200).send(user)
+        }
+      })
+    else
+      res.code(401).send({ message: "Requested user is different from logged user 🔒" });
+  });
 
   // REVIEW
   app.post("/review", (req, res) => {
-    const review = new review_model({
-      album_id: req.body.album_id,
-      user_id: req.body.user_id,
-      comment: req.body.comment,
-      rating: req.body.rating
-    });
+    const review = new review_model(req.body);
     review.save().then((response) => {
       res.code(201).send({
         message: "Review successfully created!",
@@ -74,7 +83,12 @@ export default async function (app, opts) {
       res.code(401).send({ message: "Requested user is different from logged user 🔒" });
   });
   app.get("/reviews/album/:album_id", (req, res) => {
-    // TODO: 401 if logged user != album.user_id
+    album_model.find({ user_id: req.user_id, album_id: req.params.album_id }, (error, album) => {
+      if (error)
+        res.code(401).send({ message: "Requested album does not belong to logged user 🔒" });
+    })
+
+
     review_model.find({ album_id: req.params.album_id }, (error, user) => {
       if (error) {
         res.code(500).send({
@@ -105,7 +119,7 @@ export default async function (app, opts) {
       });
     });
   });
-  app.post("/signin", (req, res) => {
+  app.post("/login", (req, res) => {
     let user_found;
     user_model.findOne({
       name: req.body.name
@@ -117,8 +131,8 @@ export default async function (app, opts) {
       }
       user_found = user;
       return bcrypt.compare(req.body.password, user.password);
-    }).then(response => {
-      if (!response) {
+    }).then(is_valid => {
+      if (!is_valid) {
         return res.code(401).send({
           message: "Authentication failed"
         });
@@ -128,6 +142,7 @@ export default async function (app, opts) {
       }, process.env.SECRET, {
         expiresIn: "6h"
       });
+      delete user_found._doc.password;
       res.code(200).send({
         token: jwtToken,
         expiresIn: "6h",
@@ -149,5 +164,17 @@ export default async function (app, opts) {
         res.code(200).send(user)
       }
     })
+  });
+  app.get("/user/has_reviewed/:album_id", (req, res) => {
+    if (req.is_auth)
+      review_model.find({ user_id: req.user_id, album_id: req.params.album_id }, (error, review) => {
+        if (error) {
+          res.code(200).send(false);
+        } else {
+          res.code(200).send(review.length > 0)
+        }
+      })
+    else
+      res.code(401).send({ message: "No logged user 🔒" });
   });
 }
