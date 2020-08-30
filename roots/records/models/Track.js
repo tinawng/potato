@@ -1,0 +1,18 @@
+// https://mongoosejs.com/docs/guide.html
+
+import mongoose from 'mongoose';
+import { db_records } from '../../../mongo.js';
+
+const Schema = mongoose.Schema;
+
+let track_schema = new Schema({
+  title: { type: String, required: true },
+  path: { type: String, required: true },
+  album_id: { type: Schema.Types.ObjectId, required: true },
+},
+  {
+    collection: 'tracks'
+  }
+)
+
+export default db_records.model('Track', track_schema);

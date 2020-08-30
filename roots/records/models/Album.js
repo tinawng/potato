@@ -8,7 +8,6 @@ const Schema = mongoose.Schema;
 
 let album_schema = new Schema({
   title: { type: String, unique: true, required: true },
-  tracks: { type: Array, required: true },
   description: { type: String, default: "" },
   user_id: { type: Schema.Types.ObjectId, required: true },
   date: { type: Date, default: Date.now },
