@@ -14,17 +14,10 @@ app.listen(8082, '0.0.0.0', (err) => {
   console.log("serv on 3k");
 })
 
-// app.addHook('preValidation', (req, res, done) => {
-//   console.log('on every request');
-//   done()
-// })
-
-// Add cors header
 app.register(cors, { origin: '*' });
 
-// Decorate request with a 'user' property
 app.decorateRequest('is_auth', '')
-// Update our property
+app.decorateRequest('user_id', '')
 app.addHook('preHandler', (req, reply, done) => {
   req.is_auth = false;
 
@@ -56,10 +49,6 @@ app.post('/is_token_valid', (req, reply) => {
     reply.code(200).send(false);
   }
 })
-
-// app.get('/', function (req, res) {
-//   res.send("Hi there 👋");
-// })
 
 import root_cmd from './roots/cmd/index.js';
 app.register(root_cmd, { prefix: "/cmd" });
