@@ -256,7 +256,6 @@ export default async function (app, opts) {
   app.post("/user/permissions/:user_id", async (req, res) => {
     if (await hasPermission(req.user_id, "manage-users")) {
       const update = req.body;
-      console.log(update)
       await user_model.findOneAndUpdate({'_id': req.params.user_id}, update)
 
       const updated_user = await user_model.findOne({'_id': req.params.user_id})
