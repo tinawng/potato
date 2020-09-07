@@ -6,26 +6,26 @@ import log from './logger/index.js';
 
 dotenv.config();
 
-const app = fastify()
-app.listen(8082, '0.0.0.0', (err) => {
+const app = fastify();
+app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
   }
-  console.log("serv on 3k");
-})
+  console.log("🥔 Potato API \n🚀 Deployed on " + process.env.SERVER_HOST + ":" + process.env.SERVER_PORT);
+});
 
 app.register(cors, { origin: '*' });
 
 if (process.env.LOG_REQUESTS) {
   app.addHook('onSend', (req, reply, payload, done) => {
-    log(reply, payload)
-    done()
+    log(reply, payload);
+    done();
   })
 }
 
-app.decorateRequest('is_auth', '')
-app.decorateRequest('user_id', '')
+app.decorateRequest('is_auth', '');
+app.decorateRequest('user_id', '');
 app.addHook('preHandler', (req, reply, done) => {
   req.is_auth = false;
 
@@ -39,14 +39,14 @@ app.addHook('preHandler', (req, reply, done) => {
       reply.code(401).send({ message: "Invalid Token 💔" });
     }
 
-  done()
+  done();
 })
 
 app.get('/', (req, reply) => {
   if (req.is_auth)
-    reply.send("You're in 🔓 \nHi there 👋 " + req.user_id)
+    reply.send("You're in 🔓 \nHi there 👋 " + req.user_id);
   else
-    reply.send("You're out 🔒")
+    reply.send("You're out 🔒");
 })
 app.post('/is_token_valid', (req, reply) => {
   try {
