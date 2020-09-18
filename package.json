@@ -5,7 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "dev": "nodemon index.js",
+    "staging": "pm2 start index.js --name Potato --watch",
+    "prod": "pm2 start index.js --name Potato"
+  },
+  "nodemonConfig": {
+    "delay": "1000"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +20,7 @@
     "dotenv": "^8.2.0",
     "fastify": "^3.3.0",
     "fastify-cors": "^4.1.0",
+    "firebase-admin": "^9.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.3",
     "mongoose-unique-validator": "^2.0.3"

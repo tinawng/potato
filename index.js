@@ -58,10 +58,12 @@ app.post('/is_token_valid', (req, reply) => {
   }
 })
 
-import root_cmd from './roots/cmd/index.js';
-app.register(root_cmd, { prefix: "/cmd" });
-import root_mongo from './roots/mongo/index.js';
-app.register(root_mongo, { prefix: "/mongo" });
+// import root_cmd from './roots/cmd/index.js';
+// app.register(root_cmd, { prefix: "/cmd" });
+// import root_mongo from './roots/mongo/index.js';
+// app.register(root_mongo, { prefix: "/mongo" });
+import root_firebase_storage from './roots/firebase/storage/index.js';
+app.register(root_firebase_storage, { prefix: "/firebase/storage" });
 import root_records from './roots/records/index.js';
 app.register(root_records, { prefix: "/records" });
 
