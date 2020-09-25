@@ -1,5 +1,11 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { v4 as uuid } from 'uuid';
+import got from 'got';
+import fs from 'fs';
+import util from 'util';
+import { pipeline } from 'stream';
+const pump = util.promisify(pipeline);
 
 import album_model from './models/Album.js';
 import review_model from './models/Review.js';
@@ -7,6 +13,7 @@ import track_model from './models/Track.js';
 import user_model from './models/User.js';
 
 export default async function (app, opts) {
+
 
   // ALBUM
   app.post("/album", async (req, res) => {
@@ -111,8 +118,8 @@ export default async function (app, opts) {
   });
 
   // TRACK
-  app.post("/track", (req, res) => {
-    if (req.is_auth) {
+  app.post("/track", async (req, res) => {
+    if (await hasPermission(req.user_id, "create-album")) {
       const track = new track_model(req.body);
       track.save().then((response) => {
         res.code(201).send({
@@ -127,8 +134,43 @@ export default async function (app, opts) {
 
     }
     else
-      res.code(401).send({ message: "No logged user 🔒" });
+      res.code(401).send({ message: "Missing permission 🔒" });
   });
+  app.post("/track/upload", async (req, res) => {
+    if (await hasPermission(req.user_id, "create-album")) {
+      try {
+        // Retrieving file data from request
+        const data = await req.file()
+        // Writing the file in .temp/ with unique name
+        const file_name = uuid();
+        await pump(data.file, fs.createWriteStream("roots/records/.temp/" + file_name));
+
+        // Uploading file to Firebase Storage and cleaning up
+        await got.post('http://127.0.0.1:' + process.env.SERVER_PORT + "/firebase/storage/uploadlocal", {
+          json: {
+            secret: process.env.SECRET,
+            path: "roots/records/.temp/" + file_name,
+            cleanup: true,
+          },
+          responseType: 'json'
+        });
+
+        // Setting access file to public and getting its url
+        var { body } = await got.post('http://127.0.0.1:' + process.env.SERVER_PORT + "/firebase/storage/makepublic", {
+          json: {
+            secret: process.env.SECRET,
+            path: file_name,
+          }
+        });
+
+        res.code(201).send({path: body})
+      } catch (error) {
+        res.code(500).send(error);
+      }
+    }
+    else
+      res.code(401).send({ message: "Missing permission 🔒" });
+  })
   app.delete("/track/:track_id", async (req, res) => {
     if (await hasPermission(req.user_id, "manage-album") || await isOwner(req.user_id, req.params.track_id)) {
 
@@ -216,7 +258,7 @@ export default async function (app, opts) {
       name: req.body.name
     }).then(user => {
       if (!user) {
-        return res.code(200).send({
+        return res.code(401).send({
           error: "Authentication failed"
         });
       }
@@ -224,7 +266,7 @@ export default async function (app, opts) {
       return bcrypt.compare(req.body.password, user.password);
     }).then(is_valid => {
       if (!is_valid) {
-        return res.code(200).send({
+        return res.code(401).send({
           error: "Authentication failed"
         });
       }
