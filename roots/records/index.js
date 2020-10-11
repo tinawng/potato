@@ -36,7 +36,7 @@ export default async function (app, opts) {
       const tracks = await track_model.find({ album_id: req.params.album_id }).exec();
       // 🗑️ Deleting tracks
       tracks.forEach(async (track) => {
-        await opts.ky.delete("records/track/" + track._id);
+        await opts.ky_local.delete("records/track/" + track._id);
       })
       // 🗑️ Deleting album
       await album_model.deleteOne({ _id: req.params.album_id });
@@ -104,26 +104,19 @@ export default async function (app, opts) {
         const file_name = uuid();
         await pump(data.file, fs.createWriteStream("roots/records/.temp/" + file_name));
 
-        // 🚀 Uploading file to Firebase Storage and clean up
-        await opts.ky.post("firebase/storage/uploadlocal", {
+        // 🚀 Uploading file to Firebase Storage 🗑️ Clean up .temp/ 🌱 Getting file metadatas
+        const file_metadata = await (await opts.ky_local.post("firebase/storage/uploadlocal", {
           json: {
             path: "roots/records/.temp/" + file_name,
             cleanup: true,
           }
-        });
+        })).json();
 
-        console.log("up!")
+        // 🌐 Getting file's public url
+        const { mediaLink } = await (await opts.ky.get(file_metadata.selfLink)).json()
 
-        // 🌐 Setting file access to public and get its url
-        var { body } = await opts.ky.post("firebase/storage/makepublic", {
-          json: {
-            path: file_name,
-          }
-        });
+        res.code(201).send({ file_url: mediaLink });
 
-        console.log("del!")
-
-        res.code(201).send({ path: body })
       } catch (error) {
         res.code(500).send(error);
       }
@@ -134,14 +127,14 @@ export default async function (app, opts) {
   app.delete("/track/:track_id", async (req, res) => {
     if (await hasPermission(req.user_id, "track.manage") || await isOwner(req.user_id, req.params.track_id)) {
 
-      // // 🔍 Searching for audio file path
-      // const { path } = await track_model.findById(req.params.track_id);
-      // // 🗑️ Deleting audio file
-      // await opts.ky.post("/firebase/storage/delete", {
-      //   json: {
-      //     path: path,
-      //   }
-      // });
+      // 🔍 Searching for audio file path
+      const { file_url } = await track_model.findById(req.params.track_id);
+      // 🗑️ Deleting audio file
+      await opts.ky_local.post("firebase/storage/delete", {
+        json: {
+          file_url: file_url,
+        }
+      });
       // 🗑️ Deleting all associated reviews
       await review_model.deleteMany({ track_id: req.params.track_id });
       // 🗑️ Deleting track
@@ -171,7 +164,7 @@ export default async function (app, opts) {
       const found_review = await review_model.findOne({ track_id: req.body.track_id, user_id: req.user_id })
 
       if (found_review) {
-        const review =  await (await opts.ky.put("records/review/" + found_review._id, { json: req.body })).json()
+        const review = await (await opts.ky_local.put("records/review/" + found_review._id, { json: req.body })).json()
         res.code(200).send(review);
       }
       else {
@@ -278,14 +271,14 @@ export default async function (app, opts) {
   });
   app.get("/group/:group_id", async (req, res) => {
     if (req.is_auth)
-      res.code(200).send(await group_model.findById({_id: req.params.group_id}))
+      res.code(200).send(await group_model.findById({ _id: req.params.group_id }))
     else
       res.code(401).send({ message: "No logged user 🔒" });
   })
 
   async function hasPermission(user_id, permission, object_id) {
-    if(!user_id) return false;
-    
+    if (!user_id) return false;
+
     // 💫 Request comes from server itself, open bar!
     if (user_id === process.env.SECRET) return true;
 
