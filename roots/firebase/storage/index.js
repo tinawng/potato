@@ -30,15 +30,8 @@ export default async function (app, opts) {
     app.post("/delete", async (req, res) => {
         if (req.headers.secret === process.env.SECRET) {
             const file_name = extractFileName(req.body.file_url)
-            try {
-
-                await bucket.file(file_name).delete();
-            } catch (error) {
-
-            }
-            finally {
-                res.code(200).send();
-            }
+            await bucket.file(file_name).delete();
+            res.code(200).send();
         }
         else
             res.code(401).send();

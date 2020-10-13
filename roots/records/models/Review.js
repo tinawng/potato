@@ -10,8 +10,6 @@ let review_schema = new Schema({
   user_id: { type: Schema.Types.ObjectId, required: true },
   content: { type: Schema.Types.Mixed },
   date: { type: Date, default: Date.now },
-  // comment: { type: String, default: "" },
-  // rating: { type: Number, default: -1 },
 },
   {
     collection: 'reviews'
