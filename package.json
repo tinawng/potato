@@ -28,5 +28,8 @@
     "mongoose": "^5.10.3",
     "mongoose-unique-validator": "^2.0.3",
     "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "casual": "^1.6.2"
   }
 }
