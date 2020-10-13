@@ -162,7 +162,7 @@ export default async function (app, opts) {
   app.post("/review", async (req, res) => {
     if (req.is_auth) {
       const found_review = await review_model.findOne({ track_id: req.body.track_id, user_id: req.user_id })
-
+      
       if (found_review) {
         const review = await (await opts.ky_local.put("records/review/" + found_review._id, { json: req.body })).json()
         res.code(200).send(review);
@@ -270,8 +270,11 @@ export default async function (app, opts) {
       res.code(401).send({ message: "Missing permission 🔒" });
   });
   app.get("/group/:group_id", async (req, res) => {
-    if (req.is_auth)
-      res.code(200).send(await group_model.findById({ _id: req.params.group_id }))
+    if (req.is_auth) {
+      const group = await group_model.findById({ _id: req.params.group_id })
+      const users = await user_model.find({ group_id: req.params.group_id }, "name")
+      res.code(200).send({...group._doc, users})
+    }
     else
       res.code(401).send({ message: "No logged user 🔒" });
   })
