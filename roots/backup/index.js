@@ -1,4 +1,3 @@
-import fs from "fs";
 import youtubedl from "youtube-dl";
 
 export default async function (app, opts) {
