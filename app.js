@@ -14,7 +14,7 @@ app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST, (err) => {
     console.error(err);
     process.exit(1);
   }
-  console.log("🥔 Potato API \n🚀 Deployed on " + process.env.SERVER_HOST + ":" + process.env.SERVER_PORT);
+  console.log("🎋 Tanabata Server \n🚀 Deployed on " + process.env.SERVER_HOST + ":" + process.env.SERVER_PORT);
 });
 
 app.register(cors, { origin: '*'});

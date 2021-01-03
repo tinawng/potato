@@ -1,13 +1,13 @@
 {
-  "name": "siyu-rest",
-  "version": "1.0.0",
+  "name": "tanabata",
+  "version": "1.3.0",
   "description": "",
   "main": "app.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon app.js",
-    "staging": "pm2 start app.js --name Potato --watch",
-    "prod": "pm2 start app.js --name Potato"
+    "staging": "pm2 start app.js --name Tanabata --watch",
+    "prod": "pm2 start app.js --name Tanabata"
   },
   "nodemonConfig": {
     "delay": "1000"
