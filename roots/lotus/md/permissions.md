@@ -18,8 +18,8 @@ User related permissions:
 ##  Attribution Tab
 |Group Name  |Album              |Track  |Review  |Group  |User  |
 |------------|-------------------|-------|--------|-------|------|
-|`op`		 |manage, see-hidden |manage |manage  |manage |manage|
-|`dev` 		 |manage, see-hidden |manage |manage  |		  |manage|
-|`design` 	 |manage, see-hidden |manage |     	  |		  |		 |
-|`beta`		 |see-hidden		 |		 |		  |		  |		 |
-|`public`	 |					 |		 |		  |		  |		 |
+|`op`		 		 |manage, see-hidden |manage |manage  |manage |manage|
+|`dev` 		 	 |manage, see-hidden |manage |manage  |			  |manage|
+|`design` 	 |manage, see-hidden |manage |     	  |			  |			 |
+|`beta`		 	 |see-hidden				 |			 |			  |			  |			 |
+|`public`	 	 |									 |			 |			  |			  |			 |
