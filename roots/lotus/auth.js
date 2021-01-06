@@ -6,11 +6,11 @@ import user_model from './models/User.js';
 export default async function (app, opts) {
   app.post("/login", async (req, res) => {
     let user = null;
-    if (req.body.name)
-      user = await user_model.findOne({ name: req.body.name });
-    if (req.body.email)
-      user = await user_model.findOne({ email: req.body.email });
-
+    if (req.body.login) {
+      user = await user_model.findOne({ email: req.body.login });
+      if (!user)
+        user = await user_model.findOne({ name: req.body.login });
+    }
     if (!user || !bcrypt.compareSync(req.body.password, user.password)) return res.code(401).send({ message: "Authentication failed 🔒" });
 
     const jwt_token = jwt.sign({ user_id: user._id }, process.env.SECRET);

@@ -37,10 +37,6 @@ export default async function (app, opts) {
             res.code(401).send();
     })
 
-    app.post("/test", async (req, res) => {
-        res.code(200).send("putin");
-    })
-
     function extractFileName(url) {
         let str = url.split(".appspot.com/o/")[1]
         str = str.split("?generation")[0]

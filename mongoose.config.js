@@ -14,6 +14,7 @@ const db_auth = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOS
 // OLD
 const db_garden = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/garden');
 const db_records = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/records');
+const db_lotus = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/lotus');
 const db_logs = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/logs');
 
-export { db_auth, db_garden, db_records, db_logs };
+export { db_auth, db_garden, db_lotus, db_logs };

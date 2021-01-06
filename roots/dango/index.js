@@ -49,14 +49,44 @@ export default async function (app, opts) {
       const path = process.env.DANGO_PATH + req.params['*'];
       const stat = fs.statSync(path);
       const fileSize = stat.size;
-      res.header('Content-Length', fileSize);
+      const range = req.headers.range;
+
+      const parts = range.replace(/bytes=/, "").split("-")
+      const start = parseInt(parts[0], 10)
+      const end = parts[1]
+        ? parseInt(parts[1], 10)
+        : fileSize - 1
+      const chunksize = (end - start) + 1
+
+      console.log(end)
+
+      const stream = fs.createReadStream(path, { start, end })
+
+      res.header('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+      res.header('Accept-Ranges', 'bytes');
+      res.header('Content-Length', chunksize);
       res.header('Content-Type', 'video/mp4');
-      const stream = fs.createReadStream(path);
-      res.send(stream);
+
+      res.send(stream)
     }
     else
       res.code(401).send({ message: "No logged user 🔒" });
   })
+
+  // BCK
+  // app.get('/stream/*', async (req, res) => {
+  //   if (req.is_auth) {
+  //     const path = process.env.DANGO_PATH + req.params['*'];
+  //     const stat = fs.statSync(path);
+  //     const fileSize = stat.size;
+  //     res.header('Content-Length', fileSize);
+  //     res.header('Content-Type', 'video/mp4');
+  //     const stream = fs.createReadStream(path);
+  //     res.send(stream);
+  //   }
+  //   else
+  //     res.code(401).send({ message: "No logged user 🔒" });
+  // })
 
   app.get('/list/*', async (req, res) => {
     if (req.is_auth) {

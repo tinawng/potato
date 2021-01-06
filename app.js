@@ -17,7 +17,7 @@ app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST, (err) => {
   console.log("🎋 Tanabata Server \n🚀 Deployed on " + process.env.SERVER_HOST + ":" + process.env.SERVER_PORT);
 });
 
-app.register(cors, { origin: '*'});
+app.register(cors, { origin: '*' });
 app.register(multipart);
 
 const ky_local = ky.create({
@@ -48,7 +48,7 @@ app.addHook('preHandler', (req, reply, done) => {
     // 👥 Log as someone else ?
     req.user_id = req.body ? req.body.as_user ? req.body.as_user : process.env.SECRET : process.env.SECRET;
   }
-  else if (req.headers.authorization){
+  else if (req.headers.authorization) {
     try {
       const token = req.headers.authorization.split(" ")[1];
       var decoded = jwt.verify(token, process.env.SECRET);
@@ -98,10 +98,12 @@ app.register(root_dango, { prefix: "/dango" });
 // app.register(root_cmd, { prefix: "/cmd" });
 // import root_mongo from './roots/mongo/index.js';
 // app.register(root_mongo, { prefix: "/mongo" });
+import root_lotus from './roots/lotus/index.js'
+app.register(root_lotus, { prefix: "/lotus", ky: ky, ky_local: ky_local })
 import root_firebase_storage from './roots/firebase/storage/index.js';
 app.register(root_firebase_storage, { prefix: "/firebase/storage" });
-import root_records from './roots/records/index.js';
-app.register(root_records, { prefix: "/records", ky: ky, ky_local: ky_local });
-import root_records_faker from './roots/records/faker.js';
-app.register(root_records_faker, { prefix: "/records/faker", ky: ky, ky_local: ky_local });
+// import root_records from './roots/records/index.js';
+// app.register(root_records, { prefix: "/records", ky: ky, ky_local: ky_local });
+// import root_records_faker from './roots/records/faker.js';
+// app.register(root_records_faker, { prefix: "/records/faker", ky: ky, ky_local: ky_local });
 
