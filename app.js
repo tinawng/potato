@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
 import fastify from 'fastify';
 import cors from 'fastify-cors'
 import jwt from 'jsonwebtoken';
@@ -8,7 +9,14 @@ import ky from 'ky-universal';
 
 dotenv.config();
 
-const app = fastify();
+const app = fastify({
+  http2: true,
+  https: {
+    allowHTTP1: true,
+    key: fs.readFileSync(process.env.CERT_PATH + 'privkey.pem'),
+    cert: fs.readFileSync(process.env.CERT_PATH + 'cert.pem')
+  }
+});
 app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST, (err) => {
   if (err) {
     console.error(err);

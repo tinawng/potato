@@ -1,5 +1,8 @@
 .temp/
 
+# Certs
+*.pem
+
 # Logs
 logs
 *.log
