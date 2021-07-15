@@ -3,7 +3,6 @@ import fs from 'fs';
 import fastify from 'fastify';
 import cors from 'fastify-cors'
 import jwt from 'jsonwebtoken';
-import log from './logger/index.js';
 import multipart from 'fastify-multipart'
 import ky from 'ky-universal';
 
@@ -34,15 +33,6 @@ const ky_local = ky.create({
     secret: process.env.SECRET
   }
 });
-
-
-// Causing CORS error! WTF??!
-// if (process.env.LOG_REQUESTS) {
-//   app.addHook('onSend', (req, reply, payload, done) => {
-//     log(reply, payload);
-//     done();
-//   })
-// }
 
 app.decorateRequest('is_auth', '');
 app.decorateRequest('user_id', '');
