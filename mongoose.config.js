@@ -13,8 +13,7 @@ mongoose.set('returnOriginal', false);
 const db_auth = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/auth');
 // OLD
 const db_garden = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/garden');
-const db_records = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/records');
-const db_lotus = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/lotus');
-const db_logs = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/logs');
+const db_contrast = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/contrast');
+const db_yubin = mongoose.createConnection('mongodb://' + process.env.MONGODB_HOST + '/yubin');
 
-export { db_auth, db_garden, db_lotus, db_logs };
+export { db_auth, db_garden, db_contrast, db_yubin };

@@ -1,4 +1,6 @@
 .temp/
+insomnia.json
+insomnia.yaml
 
 # Certs
 *.pem

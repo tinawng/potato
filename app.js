@@ -112,8 +112,8 @@ app.register(root_yubin, { prefix: "/yubin" });
 // app.register(root_cmd, { prefix: "/cmd" });
 // import root_mongo from './roots/mongo/index.js';
 // app.register(root_mongo, { prefix: "/mongo" });
-import root_lotus from './roots/lotus/index.js'
-app.register(root_lotus, { prefix: "/lotus", ky: ky, ky_local: ky_local })
+import root_contrast from './roots/contrast/index.js'
+app.register(root_contrast, { prefix: "/contrast", ky: ky, ky_local: ky_local })
 import root_firebase_storage from './roots/firebase/storage/index.js';
 app.register(root_firebase_storage, { prefix: "/firebase/storage" });
 // import root_records from './roots/records/index.js';
