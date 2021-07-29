@@ -1,14 +1,14 @@
 import user_route from './user.js'
 import group_route from './group.js'
 import recording_route from './recording.js'
-import track_route from './sample.js'
+import sample_route from './sample.js'
 import review_route from './review.js'
 
 export default async function (app, opts) {
     app.register(user_route, { prefix: "/user" });
     app.register(group_route, { prefix: "/group" });
     app.register(recording_route, { prefix: "/recording", ky: opts.ky, ky_local: opts.ky_local });
-    app.register(track_route, { prefix: "/sample", ky: opts.ky, ky_local: opts.ky_local });
+    app.register(sample_route, { prefix: "/sample", ky: opts.ky, ky_local: opts.ky_local });
     app.register(review_route, { prefix: "/review", ky: opts.ky, ky_local: opts.ky_local });
 }
 

@@ -26,7 +26,7 @@ export default async function (app, opts) {
   // 📄 List all registered group names
   app.get("/name_list", async (req, res) => {
     if (req.is_auth) {
-      var groups = await group_model.find({}, "name")
+      var groups = await group_model.find({}, "name");
       groups = [...new Set(groups.map(group => group.name))];
       groups = groups.filter(group => group != 'op');
       res.code(200).send(groups);
@@ -41,7 +41,7 @@ export default async function (app, opts) {
     else
       res.code(401).send({ message: "No logged user 🔒" });
   });
-  // 🔧 Modify group
+  // ✏️ Edit group
   app.put("/:group_id", async (req, res) => {
     if (await hasPermission(req.user_id, "group.modify"))
       res.code(200).send(await group_model.findOneAndUpdate({ '_id': req.params.group_id }, req.body));

@@ -43,7 +43,7 @@ export default async function (app, opts) {
     const params = await hasPermission(req.user_id, "user.modify") || await isOwner(req.user_id, req.params.user_id) ? "-password" : "lastname firstname department profile_picture";
     res.code(200).send(await user_model.findById(req.params.user_id, params))
   });
-  // 🔨 Modify user
+  // ✏️ Edit user
   app.put("/:user_id", async (req, res) => {
     if (await hasPermission(req.user_id, "user.modify") || await isOwner(req.user_id, req.params.user_id)) {
       var user = await user_model.findOneAndUpdate({ '_id': req.params.user_id }, req.body);
