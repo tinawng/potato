@@ -1,4 +1,4 @@
-#  Attribution Tab
+#  Permissions allocation Table
 |Group Name	|Recordings										|Review  							|Group		|User		|
 |-----------|-----------------------------------------------|-----------------------------------|-----------|-----------|
 |`op`		|*												|*		  							|*		 	|*			|
